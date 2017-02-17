@@ -1,4 +1,7 @@
 <?php 
+session_start();
+
+require_once 'Vista/html/utilidades.php';
 require_once 'Controlador/controlador.php';
 require_once 'Modelo/gestorCita.php';
 require_once 'Modelo/gestorPaciente.php';
@@ -7,6 +10,7 @@ require_once 'Modelo/GestorConsultorio.php';
 require_once 'Modelo/cita.php';
 require_once 'Modelo/paciente.php';
 require_once 'Modelo/conexion.php';
+require_once 'Modelo/gestorUsuario.php';
 
 	$controlador = new Controlador();
 
@@ -14,11 +18,26 @@ require_once 'Modelo/conexion.php';
 
 		$accion = $_GET['accion'];
 
-		if($accion=='asignar')
-			$controlador->verPagina("Vista/html/asignar.php");
+		if($accion=='asignar' || $accion=='cancelar'){
 
-		if($accion=='guardarCita')
-		{
+			if(!isset($_SESSION["usuario"]))
+				$accion = 'inicio';
+		}
+			
+		 
+		switch ($accion) {
+
+		case 'inicio':
+				$controlador->verPagina("Vista/html/inicio.php");
+				break;
+
+			
+		case 'asignar':
+			$controlador->verPagina("Vista/html/asignar.php");
+			break;
+
+		case 'guardarCita':
+		
 			$doc = $_POST['asignarDocumento'];
 			$med = $_POST['medico'];
 			$fec = $_POST['fecha'];
@@ -34,35 +53,49 @@ require_once 'Modelo/conexion.php';
 			include "Vista/html/header.php";
 			include "Vista/html/confirmarCita.php";
 			include "Vista/html/footer.php";
-		}
+		
+			break;
 
-		if($accion == 'consultarCita'){
+		case 'consultarCitas':
 
-			$idPac = $_POST['consultarDocumento'];
+			//$idPac = $_POST['consultarDocumento'];
+			$idPac = $_GET['consultarDocumento'];
+
+			//echo "Consultado paciente $idPac";
+			$gestorCita = new GestorCita();
+			$gestorCita->consultarCitasPorPac($idPac);
+
+			break;
+
+		case 'consultarCita':
+
+			$idCita = $_GET['citnumero'];
 
 			$gestorCita = new GestorCita();
-			$fila = $gestorCita->consultarCitaPorPac($idPac);
+			$fila = $gestorCita->consultarCitaPorId($idCita);
 
 			include "Vista/html/header.php";
 			include "Vista/html/confirmarCita.php";
 			include "Vista/html/footer.php";
 
-		}		
+			break;	
 
-		if($accion=='consultar')
-			$controlador->verPagina("Vista/html/consultar.php");		
+		case 'consultar':
+			$controlador->verPagina("Vista/html/consultar.php");
+			break;		
 
-		if($accion=='cancelar')
+		case 'cancelar':
 			$controlador->verPagina("Vista/html/cancelar.php");
+			break;
 
-		if($accion=='consultarPaciente'){
+		case 'consultarPaciente':
 			$doc = $_GET['documento'];
 
 			$controlador->consultarPaciente($doc);
 			
-		}
+			break;
 
-		if($accion=='ingresarPaciente'){
+		case 'ingresarPaciente':
 			
 			$pacDocumento = $_GET["pacDocumento"];
 			$pacNombres= $_GET["pacNombres"];
@@ -72,31 +105,56 @@ require_once 'Modelo/conexion.php';
 
 			$controlador->ingresarPaciente($pacDocumento,$pacNombres,$pacApellidos,$pacFecha,$pacSexo);
 
-			echo "Paciente agregado con la ayuda de Dios...";
+			echo "Paciente agregado con exitosamente";
 
-		}
+			break;
 
-		if($accion == 'consultarHora'){
+		case 'consultarHora':
 			$medico = $_GET['medico'];
 			$fecha = $_GET['fecha'];
-
-			//$resultado = "<option>Consultando horas para el medico $medico en la fecha $fecha </option>";
-			//echo $resultado;
 			$gestorCita = new GestorCita();
-		$gestorCita->conHorasPorMedicoFecha($medico,$fecha);
+			$gestorCita->conHorasPorMedicoFecha($medico,$fecha);
 
-		}
+			break;
 
-		if($accion == 'cancelarCita'){
+		case 'cancelarCita':
 			$paciente = $_GET['paciente'];
 			
 			$gestorCita = new GestorCita();
-			$gestorCita->conCitas($paciente);
-
-			echo "consultando citas de $paciente";
-		}	
+			$gestorCita->concCitas($paciente);
 
 			
+			break;
+
+		case 'confirmarCancelar':
+
+			$citnumero = $_GET['citnumero'];
+				
+			$gestorCita = new GestorCita();
+			$gestorCita->cancelar($citnumero);
+
+			
+			break;
+
+		case 'login':
+			$user = $_POST["user"];
+			$pass = $_POST["password"];
+
+			$gestorUsuario = new GestorUsuario();
+			$rol = $gestorUsuario-> validar($user,$pass);
+
+			if(isset($rol)){
+				$_SESSION["usuario"]=$rol;
+
+			}
+
+			break;
+
+		case 'cerrarSession':
+			session_destroy();
+			header('Location: index.php');
+			break;
+		}
 
 	}
 	else

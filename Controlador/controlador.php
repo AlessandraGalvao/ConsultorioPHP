@@ -1,13 +1,13 @@
 <?php
 
-require_once 'Modelo/gestorPaciente.php';
-
 class Controlador{
 
 	public function verPagina($ruta)
 	{
 		include "Vista/html/header.php";
+
 		require_once $ruta;
+
 		include "Vista/html/footer.php";
 	}
 

@@ -8,7 +8,7 @@
 	</tr>
 	<tr>
 		<td colspan="2">
-		<input type="button" name="cancelar" value="consultar" id="cancelar" onclick="cancelarCita()">
+		<input type="button" name="btncancelar" id="btncancelar" value="consultar" onclick="cancelarCita()">
 		</td>	
 	</tr>
 	<tr>

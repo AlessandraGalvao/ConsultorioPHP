@@ -6,6 +6,7 @@ class Conexion
 	private $user;
 	private $pass;
 	private $host;
+	private $stm;
 		
 
 	function __construct()
@@ -15,10 +16,14 @@ class Conexion
 		$this->host = "localhost/XE";
 		$this->conn = oci_connect($this->user, $this->pass,$this->host);
 
-		/*if(!$this->conn)
+		$this->numrow=0;
+
+		if(!$this->conn)
 		{
-			echo "Problemas...";
-			return 0;
+			$e = oci_error();   // For oci_connect errors do not pass a handle
+    		trigger_error(htmlentities($e['message']), E_USER_ERROR);
+			//echo "Problemas...";
+			//return 0;
 
 		}
 		else
@@ -26,7 +31,7 @@ class Conexion
 			//echo "Conexion exitosa...";
 			return $this->conn;
 
-		}*/
+		}
 
 	}
 
@@ -38,8 +43,8 @@ class Conexion
 
 	public function insertarSQL($sql)
 	{
-		$stm = oci_parse($this->con, $sql);
-		$resultado = oci_execute($stmt);
+		$this->stm = oci_parse($this->con, $sql);
+		$resultado = oci_execute($this->stm);
 		return $resultado;
 
 	}
@@ -54,10 +59,22 @@ class Conexion
 	public function consultar($sql)
 	{
 		
-		$resultado = oci_parse($this->conn, $sql);
-		oci_execute($resultado);
-		return $resultado;
+		$this->stm = oci_parse($this->conn, $sql);
+		$resultado= oci_execute($this->stm);
+		return $this->stm;
 
+	}
+
+	public function actualizar($sql)
+	{
+		$this->stm = oci_parse($this->conn, $sql);
+		$resultado = oci_execute($this->stm);
+		return oci_num_rows($this->stm);
+
+	}
+
+	public function numrows(){
+		return oci_num_rows($this->stm);
 	}
 
 }

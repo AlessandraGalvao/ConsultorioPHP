@@ -7,7 +7,7 @@
 		<td><input type="text" name="consultarDocumento" id="consultarDocumento" /></td>
 	</tr>
 	<tr>
-		<td colspan="2"><input type="submit" name="consultar" value="consultar" id="consultar"></td>	
+		<td colspan="2"><input type="button" name="consultar" value="consultar" id="consultar" onclick="consultarCitas()"></td>	
 	</tr>
 	<tr>
 		<td colspan="2"><div id="paciente2"></div></td>

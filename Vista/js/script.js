@@ -30,6 +30,24 @@ $(document).ready(
 			]
 			
 		});
+
+		$("#divLogin").dialog({
+			autoOpen: false,
+			height: 200,
+			width: 350,
+			modal: true,
+			buttons: [
+			{
+				text: "Login",
+				click: validarLogin
+			},
+			{
+				text: "cancelar",
+				click: cerrarDialogo
+			}
+			]
+			
+		});
 	}
 
 );
@@ -77,9 +95,69 @@ function cargarHoras(){
 	}
 }
 
+function consultarCitas(){
+
+	docPac=$("#consultarDocumento").val();
+	url = "index.php?accion=consultarCitas&consultarDocumento="+docPac;
+	$("#paciente2").load(url);
+}
+
 function cancelarCita(){
 
 	pac = $("#cancelarDocumento").val();
 	url = "index.php?accion=cancelarCita&paciente="+pac;
 	$("#paciente3").load(url);
+}
+
+function confirmarCancelar(citid){
+	
+	if(confirm("Esta seguro que desea cancelar")){
+
+		$.get("index.php",
+			   { accion: "confirmarCancelar",
+			   	 citnumero: citid	
+			   },
+			   function(resultado){
+			   		alert(resultado);
+			   }
+
+			);
+
+	}
+
+	$("#btncancelar").trigger("click");
+
+}
+
+function validarLogin(){
+	//alert("validando...");
+
+	user = $("#user").val();
+	password = $("#password").val();
+
+	$.ajax({
+			url: "index.php?accion=login",
+			type: "POST",
+			data: {
+				user: user,
+				password: password
+			},
+		 	success: function(result){
+        			//$("#resultado").html(result);
+        			//alert("ok"+result);
+        			location.href = "index.php";
+    			}
+		});
+
+}
+
+function cerrarSession(){
+
+	$.get("index.php?accion=cerrarSession");
+	location.href = "index.php";
+}
+
+function mostrarLogin(){
+
+	$("#divLogin").dialog("open");
 }

@@ -8,3 +8,18 @@
 
 	</body>
 </html>
+
+		<div id="divLogin" title="Login">
+			<form id="frmLogin">
+				<table>
+					<tr>
+						<td>user</td>
+						<td><input type="text" name="user" id="user"></td>
+					</tr>
+					<tr>
+						<td>Password</td>
+						<td><input type="password" name="password" id="password"></td>
+					</tr>
+				</table>
+			</form>
+		</div>
